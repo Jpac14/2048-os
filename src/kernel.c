@@ -1,9 +1,14 @@
 #include <stdint.h>
 #include <stddef.h>
-#include "stivale2.h"
+#include <inc/stivale2.h>
 
+#include <devices/sys/gdt/gdt.h>
+#include <devices/sys/interrupts/idt.h>
 #include <devices/serial/serial.h>
 #include <devices/video/video.h>
+#include <devices/keyboard/keyboard.h>
+#include <libstr/string.h>
+#include <libasm/asm.h>
 
 static uint8_t stack[4096];
 
@@ -43,18 +48,26 @@ void _start(struct stivale2_struct *stivale2_struct) {
     struct stivale2_struct_tag_framebuffer *fb_hdr_tag;
     fb_hdr_tag = stivale2_get_tag(stivale2_struct, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
 
+    if (fb_hdr_tag == NULL) {
+        for (;;) {
+            asm ("hlt");
+        }
+    }
+
+    init_gdt();
+
+    init_idt();
+
     init_serial();
-    puts("Hello");
 
     init_video(fb_hdr_tag);
-    colour_t bg = {255, 255, 255};
+    
+    colour_t bg = {0, 0, 0};
     set_screen(get_colour(&bg));
 
-    colour_t a = {255, 0, 0};
-    set_pixel(1023, 767, get_colour(&a));
+    colour_t text = {255, 255, 255};
+    video_print("Hello From OS!", text);
 
-
-    for (;;) {
-        asm ("hlt");
-    }
-}
+   while (1)
+      ;
+}  

@@ -1,8 +1,5 @@
 #include "serial.h"
 
-#include <libasm/asm.h>
-#include <libstr/string.h>
-
 #define COM1 0x3F8
 
 void init_serial() {
@@ -35,13 +32,26 @@ void write_serial(char ch) {
     outb(COM1, ch);
 }
 
-void puts(char *string) {
+void serial_puts(char *string) {
     for (unsigned int i = 0; i < strlen(string); i++) {
         char ch = string[i];
         write_serial((int) ch);
     }
 }
 
-void put(char ch) {
+void serial_put(char ch) {
     write_serial((int) ch);
+}
+
+void serial_printf(char *format, ...) {
+    char buffer[1000];
+     
+    va_list args;
+    va_start(args, format);
+
+    vsprintf(buffer, format, args);
+
+    va_end(args);
+
+    serial_puts(buffer);
 }
