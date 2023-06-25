@@ -1,45 +1,60 @@
 ASMFILES := $(shell find src/ lib/ -type f -name '*.asm')
 CFILES := $(shell find src/ lib/ -type f -name '*.c')
+HEADERFILES := $(shell find src/ lib/ -type f -name '*.h')
 OBJ := $(CFILES:.c=.o) $(ASMFILES:.asm=.o)
-CC = clang-11
-LD = ld
+CC = clang-15
 ASSEMBLER = nasm
+FORMATTER = clang-format
+LINTER = clang-tidy
 KERNEL_HDD = build/disk.hdd
 KERNEL_ELF = myos.elf
 
-LDINTERNALFLAGS :=      \
-	-T src/linker.ld    \
-	-static             \
-	-nostdlib           \
-	-no-pie
+LDINTERNALFLAGS :=    					 \
+	-O2														 \
+	-target x86_64-unknown-none 	 \
+	-T src/linker.ld    					 \
+	-static             					 \
+	-nostdlib           					 \
+	-fpie													 \
+	-fno-pic
 
-CFLAGS :=                          \
-	-Wall				           \
-	-Wextra						   \
+CFLAGS :=                        \
+	-target x86_64-unknown-none		 \
+	-Wall													 \
+	-Wpedantic			           		 \
+	-Wextra						   					 \
 	-Werror                        \
+	-nostdlib											 \
 	-pipe                          \
 	-fno-pic                       \
-	-mno-sse                       \
-	-mno-sse2                      \
+	-fno-strict-aliasing					 \
+	-fno-omit-frame-pointer				 \
+	-fno-stack-protector           \
+	-mno-sse						 					 \
+	-mno-sse2											 \
 	-mno-mmx                       \
-	-g                             \
 	-mno-80387                     \
 	-mno-red-zone                  \
 	-mcmodel=kernel                \
 	-ffreestanding                 \
-	-fno-stack-protector           \
+	-g                             \
+	-O2														 \
 	-Isrc/                         \
 	-Ilib/	
 
 NASMFLAGS := -felf64
 
-.PHONY: clean all run
+.PHONY: clean format all run debug
 
 all: $(KERNEL_HDD)
 
 run: $(KERNEL_HDD)
 	@echo [ QEMU ] Starting $(KERNEL_HDD)
-	@qemu-system-x86_64 -vga std -drive file=$(KERNEL_HDD),format=raw -enable-kvm -serial stdio -rtc base=localtime -m 2G
+	@qemu-system-x86_64 -vga std -drive file=$(KERNEL_HDD),format=raw -enable-kvm -serial stdio -rtc base=localtime -m 256
+
+debug: $(KERNEL_HDD)
+	@echo [ QEMU ] Debugging $(KERNEL_HDD)
+	@qemu-system-x86_64 -vga std -drive file=$(KERNEL_HDD),format=raw -d int -M smm=off -no-reboot -no-shutdown -serial stdio -rtc base=localtime -m 256
 
 %.o: %.c
 	@echo [ CC ] $<
@@ -51,7 +66,7 @@ run: $(KERNEL_HDD)
 
 $(KERNEL_ELF): $(OBJ)
 	@echo [ LD ] $<
-	@$(LD) $(LDINTERNALFLAGS) $(OBJ) -o $@
+	@$(CC) $(LDINTERNALFLAGS) $(OBJ) -o $@
 
 limine/limine-install:
 	@echo [ MAKE ] $<
@@ -78,3 +93,11 @@ $(KERNEL_HDD): $(KERNEL_ELF) limine/limine-install
 clean:
 	@echo [ RM ] $(KERNEL_HDD) $(TARGET) $(OBJ)
 	@rm -f $(KERNEL_HDD) $(TARGET) $(OBJ)
+
+format: 
+	@echo [ FORMAT ] $(CFILES) $(HEADERFILES)
+	@$(FORMATTER) -i $(CFILES) $(HEADERFILES)
+
+lint:
+	@echo [ LINT ] $(CFILES) $(HEADERFILES)
+	@$(LINTER) -checks='*' --warnings-as-errors='*' $(CFILES) $(HEADERFILES)
