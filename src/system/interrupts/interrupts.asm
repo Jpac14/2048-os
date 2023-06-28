@@ -88,14 +88,18 @@ isr_no_err_stub 29
 isr_err_stub    30
 isr_no_err_stub 31
 
+extern pit_add_ticks
 pit_handler:
-  mov al, 0x20
-  out 0x20, al
+  pushaq
+  call pit_add_ticks
+  popaq
   iretq
 
 extern keyboard_main
 keyboard_handler:
+  pushaq
   call keyboard_main
+  popaq
   iretq
 
 global isr_stub_table

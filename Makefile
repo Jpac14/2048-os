@@ -6,8 +6,8 @@ CC = clang-15
 ASSEMBLER = nasm
 FORMATTER = clang-format
 LINTER = clang-tidy
-KERNEL_HDD = build/disk.hdd
-KERNEL_ELF = myos.elf
+KERNEL_HDD = build/2048.hdd
+KERNEL_ELF = 2048.elf
 
 LDINTERNALFLAGS :=    					 \
 	-O2														 \
@@ -91,8 +91,8 @@ $(KERNEL_HDD): $(KERNEL_ELF) limine/limine-install
 	@limine/limine-install $(KERNEL_HDD)
 
 clean:
-	@echo [ RM ] $(KERNEL_HDD) $(TARGET) $(OBJ)
-	@rm -f $(KERNEL_HDD) $(TARGET) $(OBJ)
+	@echo [ RM ] $(KERNEL_HDD) $(KERNEL_ELF) $(TARGET) $(OBJ)
+	@rm -f $(KERNEL_HDD) $(KERNEL_ELF) $(TARGET) $(OBJ)
 
 format: 
 	@echo [ FORMAT ] $(CFILES) $(HEADERFILES)

@@ -4,19 +4,19 @@ void log(enum Status status, char *format, ...) {
   char *template;
   switch (status) {
     case INFO:
-      template = "\0337[\0334INFO\0337] ";
+      template = "%d:%d:%d [\033[1;34m INFO \033[1;34m\033[0m] ";
       break;
     case DEBUG:
-      template = "\0337[\0335DEBUG\0337] ";
+      template = "%d:%d:%d [\033[1;36m DEBUG \033[1;36m\033[0m] ";
       break;
     case WARNING:
-      template = "\0337[\0333WARNING\0337] ";
+      template = "%d:%d:%d [\033[1;33m WARNING \033[1;33m\033[0m] ";
       break;
     case ERROR:
-      template = "\0337[\0331ERROR\0337] ";
+      template = "%d:%d:%d [\033[1;31m ERROR \033[1;31m\033[0m] ";
       break;
     case PANIC:
-      template = "\0337[\0331PANIC\0337] ";
+      template = "%d:%d:%d [\033[1;31m PANIC \033[1;31m\033[0m] ";
       break;
   }
 
@@ -28,5 +28,8 @@ void log(enum Status status, char *format, ...) {
 
   va_end(args);
 
-  video_printf("%s %s\n", template, buffer);
+  datetime_t current = rtc_get_datetime();
+
+  serial_printf(template, current.hour, current.minute, current.second);
+  serial_printf("%s\n", buffer);
 }

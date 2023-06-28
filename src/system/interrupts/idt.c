@@ -24,8 +24,8 @@ void pic_remap(void) {
   log(INFO, "PIC Remapped");
 }
 
-void idt_set_descriptor(uint8_t vector, void* isr, uint8_t flags) {
-  struct idt_entry* descriptor = &idt[vector];
+void idt_set_descriptor(uint8_t vector, void *isr, uint8_t flags) {
+  struct idt_entry *descriptor = &idt[vector];
 
   descriptor->isr_low = (uint64_t)isr & 0xFFFF;
   descriptor->kernel_cs = GDT_OFFSET_KERNEL_CODE;

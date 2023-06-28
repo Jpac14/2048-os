@@ -1,8 +1,8 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
+#include <devices/rtc/rtc.h>
 #include <devices/serial/serial.h>
-#include <devices/video/video.h>
 #include <stdarg.h>
 
 enum Status { INFO, DEBUG, WARNING, ERROR, PANIC };

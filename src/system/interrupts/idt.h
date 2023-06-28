@@ -10,7 +10,7 @@
 #define GDT_OFFSET_KERNEL_CODE 0x08
 #define IDT_MAX_DESCRIPTORS 256
 
-extern void* isr_stub_table[];
+extern void *isr_stub_table[];
 
 struct idt_entry {
   uint16_t isr_low;    // The lower 16 bits of the ISR's address
