@@ -21,4 +21,4 @@ void keyboard_main(void) {
 bool keyboard_key(uint8_t scan_code) { return keyboard.keys[scan_code]; }
 bool keyboard_char(unsigned char c) { return keyboard.chars[c]; }
 
-void init_keyboard(void) { log(INFO, "Keyboard initalized"); }
+void init_keyboard(void) { log(INFO, "Keyboard initialized"); }
