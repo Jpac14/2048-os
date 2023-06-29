@@ -11,7 +11,7 @@ void init_serial(void) {
   outb(COM1 + 2, 0xC7);  // Enable FIFO, clear them, with 14-byte threshold
   outb(COM1 + 4, 0x0B);  // IRQs enabled, RTS/DSR set
 
-  log(INFO, "Serial initalized");
+  log(INFO, "Serial initialized");
 }
 
 int serial_recieved(void) { return inb(COM1 + 5) & 1; }

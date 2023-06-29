@@ -38,7 +38,7 @@ void init_screen(struct stivale2_struct *info) {
 
   fb_info = fb_hdr_tag;
 
-  log(INFO, "Screen initalized");
+  log(INFO, "Screen initialized");
   log(INFO, "Resolution: %dx%d", fb_info->framebuffer_width,
       fb_info->framebuffer_height);
   log(INFO, "Pitch: %d", fb_info->framebuffer_pitch);

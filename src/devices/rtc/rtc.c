@@ -50,7 +50,7 @@ datetime_t rtc_get_datetime(void) {
 }
 
 void init_rtc(void) {
-  log(INFO, "RTC initalized");
+  log(INFO, "RTC initialized");
 
   datetime_t current = rtc_get_datetime();
   log(INFO, "Date: %d/%d/%d", current.day, current.month, current.year);
